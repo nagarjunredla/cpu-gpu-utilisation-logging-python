@@ -99,7 +99,7 @@ class Logger():
         else:
             self.time_field_name = 'Time'
 
-        self.cpu_field_names = [
+        self.cpu_field_names = ["CPU#{}".format(x+1) for x in range(psutil.cpu_count())] + [
             'CPU' + (' (%)' if self.show_units else ''),
             'RAM' + (' (%)' if self.show_units else ''),
             'Swap' + (' (%)' if self.show_units else ''),
@@ -197,11 +197,13 @@ class Logger():
         float
             Swap utilisation (percentage)
         """
-        return (
+        result = (
             psutil.cpu_percent(),
             psutil.virtual_memory().percent,
             psutil.swap_memory().percent,
             )
+        result = tuple(psutil.cpu_percent(percpu=True)) + result
+        return result
 
     def poll_gpus(self, flatten=False):
         """
